@@ -6,17 +6,25 @@ on:
 
 jobs:
   build:
-
     runs-on: macos-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Build
       run: swift build -c release --arch arm64 --arch x86_64
-    - name: github-action-publish-binaries
-      uses: skx/github-action-publish-binaries@release-2.0
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/upload-artifact@v3
       with:
-          args: '.build/apple/Products/Release/dirsnapshot'
-
+        name: dirsnapshot
+        path: .build/apple/Products/Release/dirsnapshot
+        
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: dirsnapshot
+      - name: Upload the artifacts
+        uses: skx/github-action-publish-binaries@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: dirsnapshot

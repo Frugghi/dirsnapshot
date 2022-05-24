@@ -18,6 +18,11 @@ struct DirSnapshot: ParsableCommand {
         let input = Path(input).absolute()
         let output = Path(output).absolute()
 
+        // Check if the output is a folder
+        if output.isDirectory {
+            throw RuntimeError("The output must be a file, '\(output)' is a folder.")
+        }
+
         // Create the output file
         output.touch()
 
